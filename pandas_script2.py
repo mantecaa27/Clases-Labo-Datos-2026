@@ -40,25 +40,38 @@ operacion de consulta (no cambia el dataFrame)
 si el valor es nulo --> devuelve true 
 si el valor es valido --> devuelve false 
 """
-df.isna () 
+df.isna() 
 
 
-df.isna()
+# .notna() -> lo mismo que isna() pero al reves
 
 df.notna()
 
+"""
+.dropna() 
+.No cambia el dataFrame, devuelve vista limpia sin los valores nulos 
+"""
 df.dropna()
 
+"""
+df.dropna(axis='columns') es = a df.dropna(axis = 1) y si encuentra al menos 1 valor nulo, borra la columna
+"""
 df.dropna(axis='columns')
+
 
 df.dropna(how='all') # solo si TODA la fila es nula
 
+# thresh = n: si la fila tiene al menos n valores no nulos (no la borra)
 df.dropna(thresh=2) # solo si tiene muy pocos campos (trhesh) no-nan
 
+#borra si encuentra un valor nan en alguna de estas columnas
 df.dropna(subset=['nombre', 'apellido'])
 
 df.dropna(subset=['nota1', 'apellido'])
 
+"""
+fillna(x) devuelve una copia del df con los datos rellenos
+"""
 df.fillna(0)
 
 values = {"nota1": 0, "nota2": 0, "aprueba": False}
@@ -66,6 +79,14 @@ df.fillna(value=values)
 
 
 #%% ordenar por alguna columna 
+"""
+-no cambia el dataFrame
+-devuelve el dataFrame con la columna ordenada.
+- ascending = true, devuelve de menor a mayor.
+-ascending = false de mayor a menor
+- en este caso, como la columna 'nombre' es de strings, va de Z-A
+
+"""
 df.sort_values(by= 'nombre', ascending = False)
 
 
@@ -79,34 +100,48 @@ df.replace({'nombre': {'David': 'Daniel'}}) # modifico todas las apariciones de 
 df
 
 ### OJO - un caso es inplace, el otro no.
-
+#cambia todos los 7 por 8 en el dataFrame
+#no cambia el dataFrame
 df.replace(7, 8)
+
+#lo mismo pero con mas valores. 
+#  df.replace({7: 8, 3: 2},regex=True) cambia los 7.5 por ejemplo
 
 df.replace({7: 8, 3: 2})
 
+#cambia en la columna 
 df.replace({'nota2': {7: 9, 5: 6}})
 
 df.astype({'nota2': 'float'})  # cambio de tipo
 
 #%% modificar nombres de las columnas
-df.rename(columns={"nota1": "Parcial1", "nota2": "Parcial2"})
+#no cambia el df
 
+df.rename(columns={"nota1": "Parcial1", "nota2": "Parcial2"})
+df
 
 #%% calcular promedio y otras cosas
-
+#devuelve el minimo de cada columna 
 df.agg('min')
+
+#mean funciona solo con datos numericos
 df.agg(['sum', 'min', 'max', 'mean'])
 
 df['promedio'] = (df['nota1'] + df['nota2'])/2
 
 
 #%%
+#devuelve true sii en la columna todos los valores son True, strings no vacios o numeros distintos al 0 
 df.all() # solo para variables booleanas (OJO --> si no es bool es todo es True salvo el caso vacío)
+
+#devuelve true si alguno lo es
 df.any()
 
+#devuelve true si todos (o alguno en any()) los datos son Nan
 df.isna().all()
 df.isna().any()
 
+#devuelven true si todos o alguno aprueba
 df['aprueba'].all()
 df['aprueba'].any()
 
@@ -132,27 +167,42 @@ df.drop_duplicates(subset=['nota1'], keep = 'last')
 
 #%% chequear condiciones
 
+#devuelve una copia del df con true en todos los 7, y false en el resto
 df == 7
 
+#mismo que ==7
 df.eq(7)
 
+#lo contrario a ==7
 df!= 7
 
+# da una copia del df con true en los valores del df que sean 6 o 7
 df.isin([6, 7])
 
+#lo contrario
 ~df.isin([6, 7])
 
+#isin en una columna
 df.isin({'nota1': [6,7]})
 
 #%% otras funciones aplicables al df
 
+"""
+.eval()
+crea o modifica cierta columna del dF
+no modifica el dF 
+"""
 df.eval('nota_final = nota1 + 1')
 
 df.eval('promedio = 0.5*nota1 + 0.5*nota2')
 
-
+"""
+applymap()
+devuelve una copia del df con la funcion definida en el argumento aplicada a cada celda del df
+"""
 df.applymap(lambda x: len(str(x))) # defino la funcion acá mismo
 
+#hace lo mismo pero en la columna 
 df[['nombre']].applymap(lambda x: x.upper())
 
 df[['nota1']].applymap(lambda x: x*10)
@@ -161,12 +211,14 @@ df[['nota1']].applymap(lambda x: x*10)
 def f(x):
     res = x+1
     return res
-
+#acá la funcion f ya está creada 
 df[['nota1']].applymap(f)
 
 df[['nota1']].applymap(lambda x: x + 1)
 
-
+"""
+.transform() hace lo mismo que applymap() pero se asegura que el tamaño del df que devuelve sea el mismo que el original
+"""
 df[['nota1', 'nota2']].transform(lambda x: x*10)
 #%% iterar sobre las filas
 df.iterrows()
@@ -188,7 +240,8 @@ for e in df.itertuples():
 
 for e in df.itertuples():
     print(e.Index)
-    
+
+#identifica a los estudiantes que arrancaron en la pandemia mediante sus ultimos digitos de LU
 lista_ingresantes_pandemia = []
 for e in df.itertuples():
     ingreso = int(e.Index.split('/')[1])
@@ -201,7 +254,8 @@ d2 = {'nombre':['Gregoria', 'Horacio'], 'apellido': ['Pérez', 'Quirno'], 'lu': 
 
 df_nuevo = pd.DataFrame(data = d2)
 df_nuevo.set_index('lu', inplace = True) 
-
+#concat devuelve un nuevo df de dos o mas df´s concatenados.
+#si tienen las mismas columnas, pone los nuevos elementos abajo. si no, las crea
 pd.concat([df, df_nuevo])
 
 #%% armar una copia
@@ -234,12 +288,19 @@ df[(df['nota2'] <=7) & df['aprueba']]
 df[(df['nota2'] <=7) | df['aprueba']]
 
 #%% otras cosas
+#to_numpy() deja los datos crudos en un array
 a = df.to_numpy() # con tipos mixtos no
 
 d = df[['nota1', 'nota2']].dropna().to_numpy()
 
+#unique() muestra todos los valores que aparecieron en la columna
 df['nota1'].unique() 
 
+#value_counts() cuenta las apariciones de cada valor
+#dropna = False hace que cuente los NaN
 df['nota1'].value_counts(dropna = False)
 
+# funciona al reves
+#donde no cumple la condicion, reemplaza por el valor
+#no cambia el df original
 df.where(df['nota1'] > 6, 0) # donde no es mayor a 6 pongo 0
