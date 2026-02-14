@@ -14,3 +14,9 @@ df.to_csv("instituciones_de_salud.csv",index=False,encoding='utf-8')
 archivoo = "instituciones_de_salud.csv"
 
 df3 = pd.read_csv(archivoo,nrows=100)
+
+columnas_validas = ['establecimiento_id', 'establecimiento_nombre','departamento_id','provincia_id','origen_financiamiento','tipologia_nombre']
+
+df_valido = df[columnas_validas].copy()
+
+df_valido.to_excel("instituciones_de_saludd.xlsx",index=False)
