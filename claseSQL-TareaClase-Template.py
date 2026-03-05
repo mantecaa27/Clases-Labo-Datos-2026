@@ -927,6 +927,7 @@ consultaSQL = """
                 'Recuperatorio-01' AS Instancia,
                 Recuperatorio_01 AS Nota
                 FROM desafio_02
+                WHERE Nota IS NOT NULL
 
               """
               
@@ -945,16 +946,19 @@ consultaSQL = """
 aux_recu02 = dd.sql(consultaSQL).df()
 
 consultaSQL = """
-                SELECT Nombre,
-                Sexo,
-                Edad, 
-                'Parcial-01' AS Instancia,
-                Parcial_01 AS Nota
-                FROM desafio_02
+                SELECT *
+                FROM aux_parcial01 
+                UNION 
+                SELECT *
+                FROM aux_recu01
+                
+                
 
               """
               
-aux_parcial01 = dd.sql(consultaSQL).df()
+aux_001 = dd.sql(consultaSQL).df()
 
 
 desafio_03 = dd.sql(consultaSQL).df()
+
+
